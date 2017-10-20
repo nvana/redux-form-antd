@@ -1,43 +1,59 @@
-import React from "react";
-import { Radio, Select } from "antd";
+// @noflow
+
+import React from 'react';
+import { Radio, Select } from 'antd';
 
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 const RadioButton = Radio.Button;
 const getEmptyArr = () => {};
 
+type Props = { labelKey?: string, optionsKey?: string, valueKey?: string };
+
 const withOptions = (OptionType, getType) => Component =>
-  class extends React.PureComponent {
+  class MultiSelect extends React.PureComponent {
     static defaultProps = {
-      valueKey: "value",
-      labelKey: "label",
-      optionsKey: "options"
+      valueKey: 'Id',
+      labelKey: 'Label',
+      optionsKey: 'options'
     };
+
+    props: Props;
+    container: HTMLElement;
+
+    mountRef = (ref: HTMLElement) => { this.container = ref; }
+
+    getContainer = () => this.container;
+
     render() {
       const props = this.props;
+      let OptionElement = OptionType;
 
       if (getType) {
-        OptionType = getType(props);
+        OptionElement = getType(props);
       }
-      const valueKey = props.valueKey;
-      const labelKey = props.labelKey;
-      const optionsKey = props.optionsKey;
-      const options = props[optionsKey] || getEmptyArr();
+      const { labelKey, optionsKey, valueKey } = props;
+      const options = (optionsKey && this.props[optionsKey]) || getEmptyArr();
 
       return (
         <div>
-          <div ref={r => (this.container = r)} />
-          <Component getPopupContainer={() => this.container} {...props}>
-            {options.map(({ [valueKey]: value, [labelKey]: label, ...rest }, key) => (
-              <OptionType {...rest} key={key} value={String(value)}>
-                {label}
-              </OptionType>
-            ))}
+          <div ref={this.mountRef} />
+          <Component getPopupContainer={this.getContainer} {...props}>
+            {options.map(
+              ({[valueKey]: value, [labelKey]: label, ...rest}, key) => (
+                <OptionElement {...rest} key={key} value={String(value)}>
+                  {label}
+                </OptionElement>
+              )
+            )}
           </Component>
         </div>
       );
     }
   };
 
-export const RadioField = withOptions(null, ({ button }) => (button ? RadioButton : Radio))(RadioGroup);
+export const RadioField = withOptions(
+  null,
+  ({ button }) => (button ? RadioButton : Radio)
+)(RadioGroup);
 export const SelectField = withOptions(Option)(Select);

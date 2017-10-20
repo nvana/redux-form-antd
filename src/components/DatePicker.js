@@ -1,28 +1,35 @@
-import moment from "moment";
-import {DatePicker} from "antd";
-import {customMap} from "./mapError";
-import createComponent from "./BaseComponent";
+// @noflow
+
+import moment from 'moment';
+import { DatePicker } from 'antd';
+
+import { customMap } from './mapError';
+import createComponent from './BaseComponent';
 
 const MonthPicker = DatePicker.MonthPicker;
 
 const datePickerMap = customMap(({input: {onChange, value}, dateFormat}) => {
-  if (value !== "") {
-    value = moment(value, dateFormat);
+  let newValue = value;
+
+  if (value !== '') {
+    newValue = moment(value, dateFormat);
   }
-  return {onChange: (e, v) => onChange(v), value, format: dateFormat};
+  return {onChange: (e, v) => onChange(v), value: newValue, format: dateFormat};
 });
 
 // datepicker has some problems with formating this this component doesn't have such problems
 const datePickerMapRU = customMap(
   ({input: {onChange, value}, displayFormat, valueFormat}) => {
-    if (value !== "") {
-      value = moment(value);
+    let newValue = value;
+
+    if (value !== '') {
+      newValue = moment(value);
     }
     return {
-      onChange: (e, v) => {
+      onChange: (e) => {
         onChange(e.format(valueFormat));
       },
-      value,
+      value: newValue,
       format: displayFormat
     };
   }
