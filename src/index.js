@@ -1,11 +1,24 @@
-import { Checkbox, Input, Slider, InputNumber, Switch } from "antd";
-import createComponent from "./components/BaseComponent";
+/**
+ * Redux-form-antd package
+ *
+ * https://github.com/zhDmitry/redux-form-antd
+ *
+ * @flow
+ */
+// $FlowFixMe: add Slider to antd flow definition
+import { Checkbox, Input, Slider, InputNumber, Switch, AutoComplete } from 'antd';
+import { noop as NOOP } from 'lodash';
 
+import DateInput from 'components/DateInput';
+
+import createComponent from './components/BaseComponent';
+import SelectAntd from './components/SelectAntd';
 import {
   RadioField as Radio,
   SelectField as Select
-} from "./components/MultiSelect";
-import mapError, { customMap, getValidateStatus} from "./components/mapError";
+} from './components/MultiSelect';
+import mapError, { customMap, getValidateStatus} from './components/mapError';
+
 const CheckboxGroup = Checkbox.Group;
 
 const defaultTo = (value, d) => {
@@ -18,14 +31,14 @@ const eventMap = customMap(({ input: { onChange } }) => ({
 }));
 
 const checkboxGroupMap = customMap(({ input: { onChange, value = [] } }) => {
-  value = defaultTo(value, []);
-  return { onChange, value };
+  const newValue = defaultTo(value, []);
+  return { onChange, value: newValue };
 });
 
 const sliderMap = customMap(
   ({ input: { onChange, value = 0 }, range, min = 0, max = 100 }) => {
-    value = defaultTo(value, range ? [min, max] : 0);
-    return { onAfterChange: onChange, value };
+    const newValue = defaultTo(value, range ? [min, max] : 0);
+    return { onAfterChange: onChange, value: newValue };
   }
 );
 const textFieldMap = customMap(({ input: { onChange } }) => ({
@@ -33,14 +46,14 @@ const textFieldMap = customMap(({ input: { onChange } }) => ({
 }));
 
 const selectFieldMap = customMap(
-  ({ input: { onChange, value }, multiple, options }) => {
-    if (options && options.lenght > 0) {
-      value = value ? value : multiple ? [options[0].value] : options[0].value;
+  ({ input: { onChange, value }, multiple, options, ...rest }) => {
+    let newValue = value;
+    if (options && options.length > 0) {
+      newValue = value || (multiple ? [options[0].value] : options[0].value);
     }
-    return { dropdownMatchSelectWidth: true, value, style: { minWidth: 200 } };
+    return {...rest, onChange: v => onChange(v), onSelect: (v) => onChange(v), value: newValue };
   }
 );
-
 const bluredFieldMap = ({
     meta: {touched, error, warning, valid} = {},
     input: {value, onChange},
@@ -55,10 +68,14 @@ const bluredFieldMap = ({
     help: touched && (error || warning)
   });
 
-
 const switchMap = customMap(({input: {value}}) => ({
   checked: value
 }));
+
+const autoCompleteMap = customMap(({ input: { onChange, ...rest } }) => {
+  // added onChange to avoid triggering selecting an option when user types it's value(ID)
+  return { ...rest, onChange: NOOP, onSelect: (v) => onChange(v) };
+});
 
 export const CheckboxGroupField = createComponent(
   CheckboxGroup,
@@ -71,11 +88,16 @@ export const LazyTextField = createComponent(
   Input,
   bluredFieldMap
 );
+
 export const SelectField = createComponent(Select, selectFieldMap);
+export const SelectCustom = createComponent(SelectAntd, selectFieldMap);
 export const CheckboxField = createComponent(Checkbox, eventMap);
 export const RadioField = createComponent(Radio, eventMap);
 export const TextField = createComponent(Input, textFieldMap);
 export const SwitchField = createComponent(Switch, switchMap);
 export const NumberField = createComponent(InputNumber, mapError);
 export const SliderField = createComponent(Slider, sliderMap);
-export * from "./components/DatePicker";
+export const AutoCompleteField = createComponent(AutoComplete, autoCompleteMap);
+export const MaskedDatePickerField = createComponent(DateInput, eventMap);
+
+export { DatePickerField, DatePickerFieldRU, MonthPickerField } from './components/DatePicker';
