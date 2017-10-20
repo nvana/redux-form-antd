@@ -1,23 +1,25 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.MonthPickerField = exports.DatePickerField = exports.DatePickerFieldRU = undefined;
 
-var _moment = require("moment");
+var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _antd = require("antd");
+var _antd = require('antd');
 
-var _mapError = require("./mapError");
+var _mapError = require('./mapError');
 
-var _BaseComponent = require("./BaseComponent");
+var _BaseComponent = require('./BaseComponent');
 
 var _BaseComponent2 = _interopRequireDefault(_BaseComponent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// @noflow
 
 var MonthPicker = _antd.DatePicker.MonthPicker;
 
@@ -27,12 +29,14 @@ var datePickerMap = (0, _mapError.customMap)(function (_ref) {
       value = _ref$input.value,
       dateFormat = _ref.dateFormat;
 
-  if (value !== "") {
-    value = (0, _moment2.default)(value, dateFormat);
+  var newValue = value;
+
+  if (value !== '') {
+    newValue = (0, _moment2.default)(value, dateFormat);
   }
   return { onChange: function onChange(e, v) {
       return _onChange(v);
-    }, value: value, format: dateFormat };
+    }, value: newValue, format: dateFormat };
 });
 
 // datepicker has some problems with formating this this component doesn't have such problems
@@ -43,14 +47,16 @@ var datePickerMapRU = (0, _mapError.customMap)(function (_ref2) {
       displayFormat = _ref2.displayFormat,
       valueFormat = _ref2.valueFormat;
 
-  if (value !== "") {
-    value = (0, _moment2.default)(value);
+  var newValue = value;
+
+  if (value !== '') {
+    newValue = (0, _moment2.default)(value);
   }
   return {
-    onChange: function onChange(e, v) {
+    onChange: function onChange(e) {
       _onChange2(e.format(valueFormat));
     },
-    value: value,
+    value: newValue,
     format: displayFormat
   };
 });

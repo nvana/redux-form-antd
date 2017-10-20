@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -8,13 +8,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+// @noflow
+
 var getValidateStatus = exports.getValidateStatus = function getValidateStatus(touched, error, warning, valid) {
   if (touched) {
-    if (error) return "error";
-    if (warning) return "warning";
-    if (valid) return "success";
+    if (error) return 'error';
+    if (warning) return 'warning';
+    if (valid) return 'success';
   }
-  return "";
+  return '';
 };
 
 var mapError = function mapError(_ref) {
@@ -26,7 +28,7 @@ var mapError = function mapError(_ref) {
       warning = _ref$meta.warning,
       valid = _ref$meta.valid,
       inputProps = _objectWithoutProperties(_ref.input, []),
-      props = _objectWithoutProperties(_ref, ["meta", "input"]);
+      props = _objectWithoutProperties(_ref, ['meta', 'input']);
 
   return _extends({}, props, inputProps, {
     validateStatus: getValidateStatus(touched, error, warning, valid),
